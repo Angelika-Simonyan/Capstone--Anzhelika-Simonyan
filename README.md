@@ -1,5 +1,4 @@
-**What the Test Is
-**
+**What the Test Is**
 
 The experiment is a browser-based cognitive task that measures how people make decisions under different levels of time pressure. Participants complete 40 trials across four conditions — combining low and high time pressure with low and high task complexity. Each trial presents either a cognitive interference task (such as a Stroop color-word conflict, a flanker attention task, or a numerical size-value conflict) or a risk-based decision scenario (such as choosing between a guaranteed reward and a probabilistic gamble).
 
