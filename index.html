@@ -1,0 +1,1446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Mind vs Clock — AUA Cognitive Study</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+/* ── TOKENS ───────────────────────────────────────────────────── */
+:root {
+  --navy:        #0d1b2a;
+  --navy-mid:    #142233;
+  --navy-light:  #1e3a52;
+  --navy-card:   #162840;
+  --gold:        #f5c842;
+  --gold-dim:    #c9a030;
+  --white:       #f4f1eb;
+  --white-dim:   #b8b4aa;
+  --red:         #e84040;
+  --green:       #3fbf7f;
+  --blue:        #4a9eff;
+  --orange:      #ff8c42;
+  --purple:      #9b6dff;
+  --teal:        #2ec4b6;
+  --font-display: 'DM Serif Display', Georgia, serif;
+  --font-body:    'DM Sans', system-ui, sans-serif;
+  --radius:       12px;
+  --radius-lg:    20px;
+}
+
+/* ── RESET ─────────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--navy);
+  color:var(--white);
+  font-family:var(--font-body);
+  font-size:17px;
+  line-height:1.7;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ── SCREENS ───────────────────────────────────────────────────── */
+.screen{
+  display:none;
+  min-height:100vh;
+  animation:fadeIn .4s ease;
+}
+.screen.active{display:flex;flex-direction:column}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── LANGUAGE TOGGLE ───────────────────────────────────────────── */
+#lang-toggle{
+  position:fixed;top:18px;right:20px;z-index:9999;
+  background:var(--navy-card);
+  border:1.5px solid var(--gold);
+  color:var(--gold);
+  font-family:var(--font-body);
+  font-size:13px;font-weight:600;
+  padding:6px 16px;border-radius:30px;
+  cursor:pointer;transition:all .2s;
+  letter-spacing:.05em;
+}
+#lang-toggle:hover{background:var(--gold);color:var(--navy)}
+
+/* ── TYPOGRAPHY ────────────────────────────────────────────────── */
+h1{font-family:var(--font-display);font-size:clamp(2.2rem,5vw,3.6rem);line-height:1.15;font-weight:400}
+h2{font-family:var(--font-display);font-size:clamp(1.6rem,3vw,2.4rem);font-weight:400;line-height:1.2}
+h3{font-family:var(--font-body);font-size:1.1rem;font-weight:600;letter-spacing:.02em}
+p{font-size:1rem;color:var(--white-dim);line-height:1.75}
+
+/* ── BUTTONS ───────────────────────────────────────────────────── */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  font-family:var(--font-body);font-size:1rem;font-weight:600;
+  padding:14px 36px;border-radius:50px;border:none;cursor:pointer;
+  transition:all .2s;letter-spacing:.03em;text-decoration:none;
+}
+.btn-primary{background:var(--gold);color:var(--navy)}
+.btn-primary:hover{background:#ffd84a;transform:translateY(-2px);box-shadow:0 8px 24px rgba(245,200,66,.3)}
+.btn-ghost{background:transparent;color:var(--white);border:1.5px solid rgba(255,255,255,.25)}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+/* ── CARDS ─────────────────────────────────────────────────────── */
+.card{
+  background:var(--navy-card);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:var(--radius-lg);
+  padding:28px 32px;
+}
+
+/* ── FORM ELEMENTS ─────────────────────────────────────────────── */
+.form-group{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
+.form-group label{font-size:.9rem;font-weight:600;color:var(--gold);letter-spacing:.04em;text-transform:uppercase}
+.form-group input,
+.form-group select{
+  background:var(--navy-light);
+  border:1.5px solid rgba(255,255,255,.12);
+  color:var(--white);
+  font-family:var(--font-body);
+  font-size:1rem;
+  padding:12px 16px;
+  border-radius:var(--radius);
+  outline:none;
+  transition:border-color .2s;
+}
+.form-group input:focus,
+.form-group select:focus{border-color:var(--gold)}
+.form-group input::placeholder{color:var(--white-dim);opacity:.6}
+.form-group select option{background:var(--navy-mid)}
+
+/* ── CONSENT ───────────────────────────────────────────────────── */
+.consent-box{
+  display:flex;gap:14px;align-items:flex-start;
+  background:rgba(245,200,66,.07);
+  border:1.5px solid rgba(245,200,66,.25);
+  border-radius:var(--radius);
+  padding:18px 20px;
+  margin:20px 0;cursor:pointer;
+}
+.consent-box input[type=checkbox]{
+  width:20px;height:20px;flex-shrink:0;
+  accent-color:var(--gold);cursor:pointer;margin-top:2px;
+}
+.consent-box p{font-size:.92rem;color:var(--white);margin:0;line-height:1.6}
+
+/* ── PARTICIPANT ID BADGE ──────────────────────────────────────── */
+#pid-badge{
+  position:fixed;bottom:16px;left:20px;z-index:8888;
+  background:rgba(13,27,42,.85);
+  border:1px solid rgba(245,200,66,.3);
+  color:rgba(245,200,66,.7);
+  font-family:'DM Sans',monospace;
+  font-size:11px;padding:5px 12px;border-radius:20px;
+  backdrop-filter:blur(6px);
+  display:none;
+}
+
+/* ══════════════════════════════════════════════════════
+   LANDING SCREEN
+══════════════════════════════════════════════════════ */
+#screen-landing{
+  align-items:center;justify-content:center;
+  padding:60px 20px 40px;
+}
+.landing-inner{max-width:760px;width:100%;text-align:center}
+.landing-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(245,200,66,.12);
+  border:1px solid rgba(245,200,66,.3);
+  color:var(--gold);
+  font-size:.8rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  padding:6px 18px;border-radius:30px;margin-bottom:28px;
+}
+.landing-title{color:var(--white);margin-bottom:16px}
+.landing-title em{color:var(--gold);font-style:normal}
+.landing-subtitle{font-size:1.15rem;color:var(--white-dim);max-width:580px;margin:0 auto 40px}
+.meta-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:16px;
+  margin:36px 0 40px;text-align:left;
+}
+.meta-card{
+  background:var(--navy-card);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:var(--radius);
+  padding:20px 22px;
+}
+.meta-label{font-size:.75rem;color:var(--gold);font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
+.meta-value{font-size:.95rem;color:var(--white);font-weight:500;line-height:1.4}
+.divider{width:60px;height:2px;background:var(--gold);margin:32px auto;border-radius:2px;opacity:.4}
+
+/* ══════════════════════════════════════════════════════
+   REGISTRATION SCREEN
+══════════════════════════════════════════════════════ */
+#screen-register{
+  align-items:center;justify-content:center;
+  padding:80px 20px 40px;
+}
+.register-inner{max-width:520px;width:100%}
+.register-inner h2{margin-bottom:8px}
+.register-inner p{margin-bottom:32px}
+
+/* ══════════════════════════════════════════════════════
+   INSTRUCTIONS SCREEN
+══════════════════════════════════════════════════════ */
+#screen-instructions{
+  align-items:center;justify-content:center;
+  padding:80px 20px 40px;
+}
+.instructions-inner{max-width:640px;width:100%}
+.instructions-inner h2{margin-bottom:24px}
+.instruction-item{
+  display:flex;gap:16px;align-items:flex-start;
+  margin-bottom:20px;
+}
+.instruction-num{
+  width:36px;height:36px;flex-shrink:0;
+  background:var(--gold);color:var(--navy);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:.95rem;
+}
+.instruction-text{padding-top:4px}
+.instruction-text strong{color:var(--white);display:block;margin-bottom:4px}
+.keys-row{display:flex;gap:12px;margin:20px 0;justify-content:center}
+.key{
+  background:var(--navy-light);
+  border:2px solid rgba(255,255,255,.2);
+  border-radius:10px;
+  padding:10px 22px;
+  font-size:1.1rem;font-weight:700;
+  text-align:center;min-width:80px;
+}
+.key span{display:block;font-size:.7rem;color:var(--white-dim);font-weight:400;margin-top:2px}
+.points-table{width:100%;border-collapse:collapse;margin:16px 0}
+.points-table td{padding:10px 14px;font-size:.92rem;border-bottom:1px solid rgba(255,255,255,.06)}
+.points-table td:first-child{color:var(--white-dim)}
+.points-table td:last-child{color:var(--gold);font-weight:600;text-align:right}
+
+/* ══════════════════════════════════════════════════════
+   EXPERIMENT SCREEN
+══════════════════════════════════════════════════════ */
+#screen-experiment{
+  flex-direction:row;min-height:100vh;
+}
+
+/* Leaderboard sidebar */
+#sidebar{
+  width:260px;flex-shrink:0;
+  background:var(--navy-card);
+  border-right:1px solid rgba(255,255,255,.07);
+  display:flex;flex-direction:column;
+  padding:24px 0;
+  position:sticky;top:0;height:100vh;overflow-y:auto;
+}
+.sidebar-title{
+  font-family:var(--font-display);
+  font-size:1.1rem;color:var(--gold);
+  padding:0 20px 16px;
+  border-bottom:1px solid rgba(255,255,255,.07);
+  margin-bottom:12px;
+}
+.board-entry{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 20px;
+  font-size:.85rem;
+  transition:background .15s;
+}
+.board-entry.top{background:rgba(245,200,66,.06)}
+.board-entry .rank{
+  width:24px;text-align:center;
+  font-weight:700;font-size:.8rem;color:var(--white-dim);flex-shrink:0;
+}
+.board-entry .rank.gold{color:#ffd700}
+.board-entry .rank.silver{color:#c0c0c0}
+.board-entry .rank.bronze{color:#cd7f32}
+.board-entry .nick{flex:1;color:var(--white);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.board-entry .pts{color:var(--gold);font-weight:600;font-size:.8rem}
+
+/* Main experiment area */
+#exp-main{
+  flex:1;
+  display:flex;flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:32px 24px;
+  position:relative;
+}
+
+/* Score + progress bar */
+#exp-header{
+  position:absolute;top:20px;left:0;right:0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 32px;
+}
+#score-display{
+  font-family:var(--font-display);
+  font-size:1.5rem;color:var(--gold);
+}
+#progress-display{font-size:.85rem;color:var(--white-dim)}
+#progress-wrap{
+  width:100%;max-width:580px;
+  margin-bottom:12px;
+}
+#progress-track{
+  height:4px;
+  background:rgba(255,255,255,.08);
+  border-radius:2px;
+  overflow:hidden;
+  margin-top:6px;
+}
+#progress-fill{
+  height:100%;
+  background:var(--gold);
+  border-radius:2px;
+  transition:width .3s ease;
+  opacity:.6;
+}
+#progress-label{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:.8rem;
+}
+#progress-current{
+  color:var(--gold);
+  font-weight:600;
+  font-size:.95rem;
+}
+#progress-remaining{
+  color:var(--white-dim);
+  font-size:.8rem;
+}
+
+/* Timer bar */
+#timer-wrap{
+  width:100%;max-width:580px;
+  margin-bottom:28px;
+}
+#timer-bar-bg{
+  height:8px;background:rgba(255,255,255,.1);
+  border-radius:4px;overflow:hidden;
+}
+#timer-bar{
+  height:100%;border-radius:4px;
+  transition:width .1s linear, background .3s;
+  background:var(--teal);
+}
+#timer-label{
+  text-align:right;font-size:.8rem;
+  color:var(--white-dim);margin-top:5px;
+}
+
+/* Trial card */
+#trial-card{
+  width:100%;max-width:580px;
+  background:var(--navy-card);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:var(--radius-lg);
+  padding:32px;
+  text-align:center;
+}
+#trial-type-badge{
+  display:inline-flex;
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:20px;
+  font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--white-dim);padding:4px 14px;margin-bottom:20px;
+}
+#trial-question{
+  font-size:1.05rem;color:var(--white-dim);
+  margin-bottom:24px;min-height:28px;
+}
+#trial-stimulus{
+  margin:16px auto 28px;
+  min-height:80px;
+  display:flex;align-items:center;justify-content:center;
+}
+
+/* Options */
+#options-wrap{
+  display:grid;grid-template-columns:1fr 1fr;gap:14px;
+}
+.option-btn{
+  background:var(--navy-light);
+  border:2px solid rgba(255,255,255,.12);
+  border-radius:var(--radius);
+  color:var(--white);
+  font-family:var(--font-body);
+  font-size:.95rem;font-weight:500;
+  padding:16px 14px;
+  cursor:pointer;
+  transition:all .15s;
+  text-align:center;line-height:1.4;
+}
+.option-btn:hover{border-color:var(--gold);background:rgba(245,200,66,.08)}
+.option-btn.chosen-correct{border-color:var(--green)!important;background:rgba(63,191,127,.12)!important}
+.option-btn.chosen-wrong{border-color:var(--red)!important;background:rgba(232,64,64,.12)!important}
+.option-btn .key-hint{
+  display:block;
+  font-size:.72rem;color:var(--gold);
+  font-weight:700;letter-spacing:.08em;
+  margin-bottom:6px;
+}
+
+/* Feedback flash */
+#feedback-flash{
+  position:absolute;
+  font-family:var(--font-display);
+  font-size:3rem;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .2s;
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  z-index:100;
+}
+#feedback-flash.show{opacity:1}
+#feedback-flash.pos{color:var(--gold)}
+#feedback-flash.neg{color:var(--red)}
+
+/* Condition tag */
+#condition-tag{
+  display:inline-flex;gap:6px;align-items:center;
+  font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  padding:4px 14px;border-radius:20px;margin-bottom:16px;
+}
+#condition-tag.high{background:rgba(232,64,64,.15);color:#ff6b6b;border:1px solid rgba(232,64,64,.3)}
+#condition-tag.low{background:rgba(46,196,182,.1);color:var(--teal);border:1px solid rgba(46,196,182,.25)}
+
+/* ══════════════════════════════════════════════════════
+   BREAK SCREEN
+══════════════════════════════════════════════════════ */
+#screen-break{
+  flex-direction:row;min-height:100vh;
+}
+#break-main{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:60px 40px;text-align:center;
+}
+#break-countdown{
+  font-family:var(--font-display);
+  font-size:5rem;color:var(--gold);
+  line-height:1;margin:16px 0;
+}
+#break-score{font-size:1.4rem;color:var(--white);margin-bottom:8px}
+
+/* ══════════════════════════════════════════════════════
+   RESULTS SCREEN
+══════════════════════════════════════════════════════ */
+#screen-results{
+  flex-direction:row;min-height:100vh;
+}
+#results-main{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:60px 40px;text-align:center;
+}
+#final-rank-display{
+  font-family:var(--font-display);
+  font-size:6rem;color:var(--gold);
+  line-height:1;margin:16px 0;
+}
+#final-score-display{font-size:1.6rem;color:var(--white);margin-bottom:24px}
+.result-msg{max-width:460px;margin:0 auto 32px}
+
+/* ══════════════════════════════════════════════════════
+   PRACTICE LABEL
+══════════════════════════════════════════════════════ */
+#practice-label{
+  position:absolute;top:20px;left:50%;transform:translateX(-50%);
+  background:rgba(232,64,64,.15);
+  border:1px solid rgba(232,64,64,.3);
+  color:#ff6b6b;
+  font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  padding:4px 16px;border-radius:20px;
+  display:none;
+}
+
+/* ══════════════════════════════════════════════════════
+   STROOP STIMULUS STYLES
+══════════════════════════════════════════════════════ */
+.stroop-word{
+  font-family:var(--font-display);
+  font-size:3.2rem;
+  font-weight:400;
+  letter-spacing:.02em;
+}
+.stroop-grid{
+  display:flex;flex-direction:column;gap:8px;align-items:center;
+}
+.stroop-row{display:flex;gap:20px;align-items:center;justify-content:center}
+.flanker-display{
+  font-size:2.6rem;font-weight:700;letter-spacing:6px;
+  color:var(--white);font-family:var(--font-body);
+}
+.flanker-center{color:var(--gold)}
+.num-stroop{
+  display:flex;gap:40px;align-items:center;justify-content:center;
+}
+.crt-text{
+  font-size:1.1rem;color:var(--white);line-height:1.7;
+  max-width:440px;margin:0 auto;text-align:left;
+  background:rgba(255,255,255,.04);
+  border-radius:var(--radius);padding:18px 22px;
+}
+
+/* ══════════════════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════════════════ */
+@media(max-width:700px){
+  #sidebar{display:none}
+  .meta-grid{grid-template-columns:1fr}
+  .landing-inner{padding:0 4px}
+  #exp-main{padding:80px 16px 24px}
+}
+</style>
+</head>
+<body>
+
+<!-- Language toggle -->
+<button id="lang-toggle" onclick="toggleLang()">ՀԱՅ</button>
+
+<!-- Participant ID badge (always visible during experiment) -->
+<div id="pid-badge"></div>
+
+<!-- ══════════════════════════════════════════════════
+     SCREEN 1 — LANDING
+══════════════════════════════════════════════════════ -->
+<section id="screen-landing" class="screen active">
+  <div class="landing-inner">
+    <div class="landing-eyebrow">
+      <span>⬡</span>
+      <span data-en="AUA · Cognitive Science Study · 2026" data-hy="ՀԱՀ · Ճանաչողական Գիտություն · 2026">AUA · Cognitive Science Study · 2026</span>
+    </div>
+
+    <h1 class="landing-title">
+      <span data-en="Mind" data-hy="Միտք">Mind</span>
+      <em> vs </em>
+      <span data-en="Clock" data-hy="Ժամ">Clock</span>
+    </h1>
+
+    <p class="landing-subtitle" data-en="How does your brain make decisions when time runs out? A cognitive challenge that reveals how your mind switches gears under pressure." data-hy="Ինչպե՞ս է ձեր ուղեղը որոշումներ կայացնում, երբ ժամանակը սպառվում է: Ճանաչողական մարտահրավեր, որը բացահայտում է, թե ինչպես է ձեր միտքը փոխում արագությունը ճնշման տակ:">
+      How does your brain make decisions when time runs out? A cognitive challenge that reveals how your mind switches gears under pressure.
+    </p>
+
+    <div class="divider"></div>
+
+    <div class="meta-grid">
+      <div class="meta-card">
+        <div class="meta-label" data-en="Research" data-hy="Հետազոտություն">Research</div>
+        <div class="meta-value" data-en="Detecting & predicting behavioral strategy shifts in human decision-making under changing conditions" data-hy="Մարդկային որոշումների կայացման մեջ վարքային ռազմավարության փոփոխությունների հայտնաբերում և կանխատեսում">Detecting & predicting behavioral strategy shifts in human decision-making under changing conditions</div>
+      </div>
+      <div class="meta-card">
+        <div class="meta-label" data-en="Institution" data-hy="Հաստատություն">Institution</div>
+        <div class="meta-value">American University of Armenia<br/>BS in Data Science</div>
+      </div>
+      <div class="meta-card">
+        <div class="meta-label" data-en="Student" data-hy="Ուսանող">Student</div>
+        <div class="meta-value">Anzhelika Simonyan</div>
+      </div>
+      <div class="meta-card">
+        <div class="meta-label" data-en="Supervisor" data-hy="Ղեկավար">Supervisor</div>
+        <div class="meta-value">Arman Asryan</div>
+      </div>
+      <div class="meta-card" style="grid-column:span 2;">
+        <div class="meta-label" data-en="What to expect" data-hy="Ինչ սպասել">What to expect</div>
+        <div class="meta-value" data-en="~15 minutes · 130 cognitive trials · Live leaderboard · Prize for the top scorer" data-hy="~15 րոպե · 130 ճանաչողական փորձ · Ուղիղ վարկանիշ · Մրցանակ լավագույն մասնակցի համար">~15 minutes · 130 cognitive trials · Live leaderboard · Prize for the top scorer</div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="showScreen('register')" data-en="Begin the challenge →" data-hy="Սկսել մարտահրավերը →">Begin the challenge →</button>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════
+     SCREEN 2 — REGISTRATION
+══════════════════════════════════════════════════════ -->
+<section id="screen-register" class="screen">
+  <div class="register-inner">
+    <h2 data-en="Before we begin" data-hy="Նախքան սկսելը">Before we begin</h2>
+    <p data-en="Please fill in a few details. Your nickname is the only thing that will appear publicly on the leaderboard." data-hy="Խնդրում ենք լրացնել մի քանի մանրամասն: Ձեր մականունն է միայն հրապարակայնորեն երևում կղմինդրապատկերի վրա:">Please fill in a few details. Your nickname is the only thing that will appear publicly on the leaderboard.</p>
+
+    <div class="form-group">
+      <label data-en="Nickname (public)" data-hy="Մականուն (հրապարակային)">Nickname (public)</label>
+      <input type="text" id="inp-nickname" maxlength="20" placeholder="e.g. DataWiz" autocomplete="off"/>
+    </div>
+    <div class="form-group">
+      <label data-en="Age" data-hy="Տարիք">Age</label>
+      <input type="number" id="inp-age" min="18" max="99" placeholder="e.g. 22"/>
+    </div>
+    <div class="form-group">
+      <label data-en="Gender" data-hy="Սեռ">Gender</label>
+      <select id="inp-gender">
+        <option value="" data-en="Select..." data-hy="Ընտրել...">Select...</option>
+        <option value="M" data-en="Male" data-hy="Արական">Male</option>
+        <option value="F" data-en="Female" data-hy="Իգական">Female</option>
+        <option value="O" data-en="Other / Prefer not to say" data-hy="Այլ / Նախընտրում եմ չասել">Other / Prefer not to say</option>
+      </select>
+    </div>
+
+    <div class="consent-box" onclick="document.getElementById('consent-check').click()">
+      <input type="checkbox" id="consent-check"/>
+      <p data-en="I confirm that I am participating in this study voluntarily, I am 18 years of age or older, and I understand that I may withdraw at any time without consequence." data-hy="Հաստատում եմ, որ մասնակցում եմ այս ուսումնասիրությանը կամավոր կերպով, 18 տարեկան կամ ավելի մեծ եմ, և հասկանում եմ, որ կարող եմ ցանկացած պահի դուրս գալ:">I confirm that I am participating in this study voluntarily, I am 18 years of age or older, and I understand that I may withdraw at any time without consequence.</p>
+    </div>
+
+    <div id="reg-error" style="color:var(--red);font-size:.88rem;margin-bottom:14px;display:none;"></div>
+
+    <div style="display:flex;gap:12px;">
+      <button class="btn btn-ghost" onclick="showScreen('landing')" data-en="← Back" data-hy="← Վերադառնալ">← Back</button>
+      <button class="btn btn-primary" onclick="submitRegistration()" data-en="Continue →" data-hy="Շարունակել →">Continue →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════
+     SCREEN 3 — INSTRUCTIONS
+══════════════════════════════════════════════════════ -->
+<section id="screen-instructions" class="screen">
+  <div class="instructions-inner">
+    <h2 data-en="How it works" data-hy="Ինչպես է աշխատում">How it works</h2>
+
+    <div class="instruction-item">
+      <div class="instruction-num">1</div>
+      <div class="instruction-text">
+        <strong data-en="Two options, one choice" data-hy="Երկու տարբերակ, մեկ ընտրություն">Two options, one choice</strong>
+        <p data-en="Each trial shows a question or visual challenge with two possible answers. Choose the one you believe is correct — or the better option in a gamble." data-hy="Յուրաքանչյուր փորձ ցույց է տալիս հարց կամ տեսողական մարտահրավեր երկու հնարավոր պատասխանով: Ընտրեք այն, ինչ ճիշտ է, կամ ավելի լավ տարբերակ խաղի դեպքում:">Each trial shows a question or visual challenge with two possible answers. Choose the one you believe is correct — or the better option in a gamble.</p>
+      </div>
+    </div>
+
+    <div class="keys-row">
+      <div class="key" style="border-color:var(--teal);color:var(--teal)">F <span data-en="Option A" data-hy="Տարբերակ Ա">Option A</span></div>
+      <div style="color:var(--white-dim);padding-top:10px">or</div>
+      <div class="key" style="border-color:var(--red);color:var(--red)">J <span data-en="Option B" data-hy="Տարբերակ Բ">Option B</span></div>
+    </div>
+
+    <div class="instruction-item">
+      <div class="instruction-num">2</div>
+      <div class="instruction-text">
+        <strong data-en="Beat the clock" data-hy="Հաղթիր ժամացույցին">Beat the clock</strong>
+        <p data-en="Every trial has a timer. Some blocks give you 12 seconds to think carefully. Others give you only 7 seconds — you must react fast." data-hy="Յուրաքանչյուր փորձ ունի ժամաչափ: Որոշ բլոկներ տալիս են 12 վայրկյան ուշադիր մտածելու համար: Մյուսները տալիս են ընդամենը 7 վայրկյան:">Every trial has a timer. Some blocks give you 10 seconds to think carefully. Others give you only 4 seconds — you must react fast.</p>
+      </div>
+    </div>
+
+    <div class="instruction-item">
+      <div class="instruction-num">3</div>
+      <div class="instruction-text">
+        <strong data-en="Score points, climb the board" data-hy="Հավաքիր միավոր, բարձրացիր կղմինդրապատկերում">Score points, climb the board</strong>
+        <table class="points-table">
+          <tr><td data-en="Correct or high-value answer" data-hy="Ճիշտ կամ բարձր արժեք">Correct or high-value answer</td><td>+5 to +155 pts</td></tr>
+          <tr><td data-en="Any answer in time" data-hy="Ցանկացած պատասխան ժամանակին">Any answer in time</td><td>+5 pts</td></tr>
+          <tr><td data-en="Timeout — no answer" data-hy="Ժամանակ սպառվեց — առանց պատասխանի">Timeout — no answer</td><td style="color:var(--red)">−10 pts</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="instruction-item">
+      <div class="instruction-num">4</div>
+      <div class="instruction-text">
+        <strong data-en="Win a prize" data-hy="Շահիր մրցանակ">Win a prize</strong>
+        <p data-en="The highest scorer at the end of the study wins a prize. Your rank is revealed only after you finish — compete without seeing yourself on the board." data-hy="Ուսումնասիրության վերջում ամենաբարձր միավոր հավաքողը ստանում է մրցանակ: Ձեր վարկանիշը բացահայտվում է միայն ավարտից հետո:">The highest scorer at the end of the study wins a prize. Your rank is revealed only after you finish — compete without seeing yourself on the board.</p>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:12px;margin-top:16px;">
+      <button class="btn btn-ghost" onclick="showScreen('register')" data-en="← Back" data-hy="← Վերադառնալ">← Back</button>
+      <button class="btn btn-primary" onclick="startPractice()" data-en="Start practice (10 trials) →" data-hy="Սկսել պրակտիկա (10 փորձ) →">Start practice (10 trials) →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════
+     SCREEN 4 — EXPERIMENT
+══════════════════════════════════════════════════════ -->
+<section id="screen-experiment" class="screen">
+
+  <!-- Sidebar leaderboard -->
+  <aside id="sidebar">
+    <div class="sidebar-title" data-en="🏆 Leaderboard" data-hy="🏆 Կղմինդրապատկեր">🏆 Leaderboard</div>
+    <div id="board-list"></div>
+  </aside>
+
+  <!-- Main area -->
+  <main id="exp-main">
+    <div id="practice-label" data-en="PRACTICE — not scored" data-hy="ՊՐԱԿՏԻԿԱ — չի հաշվվում">PRACTICE — not scored</div>
+
+    <div id="exp-header">
+      <div id="score-display">0 <span style="font-family:var(--font-body);font-size:.9rem;color:var(--white-dim)" data-en="pts" data-hy="մt">pts</span></div>
+      <div id="progress-display">1 / 50</div>
+    </div>
+
+    <div id="progress-wrap">
+      <div id="progress-label">
+        <span id="progress-current">Question 1</span>
+        <span id="progress-remaining">49 remaining</span>
+      </div>
+      <div id="progress-track"><div id="progress-fill" style="width:2%"></div></div>
+    </div>
+
+    <div id="timer-wrap">
+      <div id="timer-bar-bg"><div id="timer-bar"></div></div>
+      <div id="timer-label">10.0s</div>
+    </div>
+
+    <div id="trial-card">
+      <div id="trial-type-badge">Cognitive Trial</div>
+      <div id="condition-tag" class="low">⚡ Low pressure</div>
+      <div id="trial-question">Loading...</div>
+      <div id="trial-stimulus"></div>
+      <div id="options-wrap">
+        <button class="option-btn" id="opt-a" onclick="handleChoice('A')">
+          <span class="key-hint">F</span>
+          <span id="opt-a-text">Option A</span>
+        </button>
+        <button class="option-btn" id="opt-b" onclick="handleChoice('B')">
+          <span class="key-hint">J</span>
+          <span id="opt-b-text">Option B</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="feedback-flash"></div>
+  </main>
+</section>
+
+<!-- ══════════════════════════════════════════════════
+     SCREEN 5 — BREAK
+══════════════════════════════════════════════════════ -->
+<section id="screen-break" class="screen">
+  <aside id="break-sidebar" style="width:260px;flex-shrink:0;background:var(--navy-card);border-right:1px solid rgba(255,255,255,.07);display:flex;flex-direction:column;padding:24px 0;height:100vh;overflow-y:auto;">
+    <div class="sidebar-title" data-en="🏆 Leaderboard" data-hy="🏆 Կղմինդրապատկեր">🏆 Leaderboard</div>
+    <div id="break-board-list"></div>
+  </aside>
+  <div id="break-main">
+    <p style="color:var(--white-dim);font-size:.85rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px" id="break-block-label">Block 1 complete</p>
+    <h2 data-en="Take a breath" data-hy="Շնչեք">Take a breath</h2>
+    <div id="break-score"></div>
+    <div id="break-countdown">60</div>
+    <p style="color:var(--white-dim);font-size:.9rem" data-en="Next block starts automatically. Press SPACE to continue early." data-hy="Հաջորդ բլոկը սկսվում է ավտոմատ: Սեղմեք SPACE-ն շուտ շարունակելու համար:">Next block starts automatically. Press SPACE to continue early.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════
+     SCREEN 6 — RESULTS
+══════════════════════════════════════════════════════ -->
+<section id="screen-results" class="screen">
+  <aside style="width:260px;flex-shrink:0;background:var(--navy-card);border-right:1px solid rgba(255,255,255,.07);display:flex;flex-direction:column;padding:24px 0;height:100vh;overflow-y:auto;">
+    <div class="sidebar-title" data-en="🏆 Final Leaderboard" data-hy="🏆 Եզրափակիչ Կղմինդրապատկեր">🏆 Final Leaderboard</div>
+    <div id="results-board-list"></div>
+  </aside>
+  <div id="results-main">
+    <p style="color:var(--white-dim);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px" data-en="Your final rank" data-hy="Ձեր եզրափակիչ դիրքը">Your final rank</p>
+    <div id="final-rank-display">#—</div>
+    <div id="final-score-display">— pts</div>
+    <div class="result-msg">
+      <p id="result-message"></p>
+    </div>
+    <p style="font-size:.85rem;color:var(--white-dim);max-width:400px;line-height:1.6" data-en="Thank you for participating in this study. Your data has been recorded. The researcher will be in touch regarding the prize." data-hy="Շնորհակալություն այս ուսումնասիրությանը մասնակցելու համար: Ձեր տվյալները գրանցվել են: Հետազոտողը կապ կհաստատի մրցանակի վերաբերյալ:">Thank you for participating in this study. Your data has been recorded. The researcher will be in touch regarding the prize.</p>
+    <div style="margin-top:8px;padding:10px 16px;background:rgba(255,255,255,.04);border-radius:var(--radius);font-size:.8rem;color:var(--white-dim)">
+      <span data-en="Your participant ID: " data-hy="Ձեր մասնակցի ID: ">Your participant ID: </span>
+      <span id="final-pid" style="color:var(--gold);font-weight:600"></span>
+    </div>
+  </div>
+</section>
+
+<script>
+// ══════════════════════════════════════════════════════════════════
+// GOOGLE SHEETS CONFIG
+// Replace SHEET_ID and SHEET_NAME after you create your Google Sheet
+// and deploy the Apps Script (see SETUP.md)
+// ══════════════════════════════════════════════════════════════════
+const SHEETS_ENDPOINT = 'https://script.google.com/macros/s/AKfycby_friwDjefPr3eCTZNSpPf3OKColkysgwyoYWpO3I4onLfaH4MGdrVaFzMQQFlq2jl/exec';
+
+// ══════════════════════════════════════════════════════════════════
+// LANGUAGE
+// ══════════════════════════════════════════════════════════════════
+let lang = 'en';
+function toggleLang(){
+  lang = lang === 'en' ? 'hy' : 'en';
+  document.getElementById('lang-toggle').textContent = lang === 'en' ? 'ՀԱՅ' : 'ENG';
+  document.querySelectorAll('[data-en]').forEach(el => {
+    const txt = el.getAttribute('data-' + lang);
+    if(txt) el.textContent = txt;
+  });
+  if(currentTrial) renderTrial(currentTrial);
+}
+function t(enKey, hyKey){ return lang === 'hy' && hyKey ? hyKey : enKey; }
+
+// ══════════════════════════════════════════════════════════════════
+// SCREEN NAVIGATION
+// ══════════════════════════════════════════════════════════════════
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+}
+
+// ══════════════════════════════════════════════════════════════════
+// PARTICIPANT STATE
+// ══════════════════════════════════════════════════════════════════
+let participantId = '';
+let nickname = '';
+let age = '';
+let gender = '';
+let totalScore = 0;
+let trialLog = [];
+let currentTrial = null;
+let timerInterval = null;
+let trialStartTime = 0;
+let isPractice = false;
+let trialIndex = 0;
+let blockIndex = 0;
+let awaitingNext = false;
+
+function generateId(){
+  const now = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  const stamp = `${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+  const suffix = Math.floor(100 + Math.random()*900);
+  return `AUA-${stamp}-${suffix}`;
+}
+
+// ══════════════════════════════════════════════════════════════════
+// REGISTRATION
+// ══════════════════════════════════════════════════════════════════
+function submitRegistration(){
+  const nick = document.getElementById('inp-nickname').value.trim();
+  const a    = document.getElementById('inp-age').value.trim();
+  const g    = document.getElementById('inp-gender').value;
+  const ok   = document.getElementById('consent-check').checked;
+  const err  = document.getElementById('reg-error');
+
+  if(!nick){ err.textContent = t('Please enter a nickname.','Խնդրում ենք մուտքագրել մականուն:'); err.style.display='block'; return; }
+  if(!a || a < 18){ err.textContent = t('You must be 18 or older to participate.','Մասնակցելու համար պետք է լինեք 18 կամ ավելի մեծ:'); err.style.display='block'; return; }
+  if(!g){ err.textContent = t('Please select your gender.','Խնդրում ենք ընտրել ձեր սեռը:'); err.style.display='block'; return; }
+  if(!ok){ err.textContent = t('Please confirm your consent to continue.','Շարունակելու համար խնդրում ենք հաստատել ձեր համաձայնությունը:'); err.style.display='block'; return; }
+
+  err.style.display = 'none';
+  nickname = nick;
+  age = a;
+  gender = g;
+  participantId = generateId();
+
+  document.getElementById('pid-badge').textContent = 'ID: ' + participantId;
+  document.getElementById('pid-badge').style.display = 'block';
+  document.getElementById('final-pid').textContent = participantId;
+
+  showScreen('instructions');
+}
+
+// ══════════════════════════════════════════════════════════════════
+// LEADERBOARD DATA
+// ══════════════════════════════════════════════════════════════════
+let leaderboard = [
+  {nick:'Arman_92',score:1820,fake:true},
+  {nick:'DataWiz', score:1750,fake:true},
+  {nick:'Luna',    score:1690,fake:true},
+  {nick:'Nare',    score:1630,fake:true},
+  {nick:'Tiger',   score:1580,fake:true},
+  {nick:'Raffi_K', score:1550,fake:true},
+  {nick:'Phoenix', score:1510,fake:true},
+  {nick:'Ani2024', score:1480,fake:true},
+  {nick:'CodeMstr',score:1460,fake:true},
+  {nick:'Sose',    score:1440,fake:true},
+  {nick:'Varduhi', score:1420,fake:true},
+  {nick:'MindShft',score:1400,fake:true},
+  {nick:'Gevorg',  score:1380,fake:true},
+  {nick:'Stella',  score:1360,fake:true},
+  {nick:'Narek_A', score:1340,fake:true},
+  {nick:'QuikThnk',score:1300,fake:true},
+  {nick:'Mariam',  score:1260,fake:true},
+  {nick:'Tigran',  score:1210,fake:true},
+  {nick:'Nova',    score:1150,fake:true},
+  {nick:'Aram_DS', score:1080,fake:true}
+];
+
+function getSortedBoard(){ return [...leaderboard].sort((a,b)=>b.score-a.score); }
+
+function renderBoard(containerId, highlightNick=null){
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  const sorted = getSortedBoard();
+  el.innerHTML = sorted.map((e,i) => {
+    const r = i+1;
+    const rankClass = r===1?'gold':r===2?'silver':r===3?'bronze':'';
+    const isMe = e.nick === highlightNick;
+    return `<div class="board-entry ${r<=3?'top':''} ${isMe?'highlighted':''}">
+      <span class="rank ${rankClass}">${r===1?'1':r===2?'2':r===3?'3':r}</span>
+      <span class="nick" ${isMe?'style="color:var(--gold)"':''}>${e.nick}</span>
+      <span class="pts">${e.score}</span>
+    </div>`;
+  }).join('');
+}
+
+function addRealScore(nick, score){
+  const fakes = leaderboard.filter(e => e.fake);
+  if(fakes.length > 0){
+    const lowest = fakes.reduce((a,b) => a.score < b.score ? a : b);
+    leaderboard = leaderboard.filter(e => e !== lowest);
+  }
+  leaderboard.push({nick, score, fake:false});
+  const sorted = getSortedBoard();
+  const rank = sorted.findIndex(e => e.nick === nick && e.score === score) + 1;
+  return rank;
+}
+
+// ══════════════════════════════════════════════════════════════════
+// TRIAL BANK
+// ══════════════════════════════════════════════════════════════════
+const COLORS_EN = ['RED','BLUE','GREEN','YELLOW','ORANGE','PURPLE'];
+const COLORS_HY = ['ԿԱՐՄԻՐ','ԿԱՊՈՒՅՏ','ԿԱՆԱՉ','ԴԵՂԻՆ','ՆԱՐՆՋԱԳՈՒՅՆ','ՄԱՆՈՒՇԱԿ'];
+const COLOR_HEX = {
+  RED:'#e84040', BLUE:'#4a9eff', GREEN:'#3fbf7f',
+  YELLOW:'#f5c842', ORANGE:'#ff8c42', PURPLE:'#9b6dff',
+  ԿԱՐՄԻՐ:'#e84040', ԿԱՊՈՒՅՏ:'#4a9eff', ԿԱՆԱՉ:'#3fbf7f',
+  ԴԵՂԻՆ:'#f5c842', ՆАРՆÇАГՈՒՅՆ:'#ff8c42', ՄԱՆՈՒՇԱԿ:'#9b6dff'
+};
+
+function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function shuffle(arr){ return [...arr].sort(()=>Math.random()-.5); }
+
+function makeStroopTrial(isReverse=false){
+  const colors = lang==='hy' ? COLORS_HY : COLORS_EN;
+  const word = pick(colors);
+  let inkColor;
+  do { inkColor = pick(colors); } while(inkColor === word);
+  const correctAnswer = isReverse ? word : inkColor;
+  const wrong = pick(colors.filter(c => c !== correctAnswer));
+  const opts = shuffle([correctAnswer, wrong]);
+  return {
+    type: isReverse ? 'reverse-stroop' : 'stroop',
+    typeLabelEn: isReverse ? 'Reverse Stroop' : 'Classic Stroop',
+    typeLabelHy: isReverse ? 'Հակառակ Ստրուպ' : 'Դասական Ստրուպ',
+    questionEn: isReverse ? 'What does the word SAY? (ignore the color)' : 'What COLOR is the ink? (ignore the word)',
+    questionHy: isReverse ? 'Ի՞նչ է ասում բառը: (անտեսիր գույնը)' : 'Ի՞նչ ԳՈՒՅՆ է մայրամուտը: (անտեսիր բառը)',
+    stimulus: `<span class="stroop-word" style="color:${COLOR_HEX[inkColor]||'#fff'}">${word}</span>`,
+    optA: opts[0], optB: opts[1],
+    correct: correctAnswer,
+    ev: 120,
+  };
+}
+
+function makeNumericalStroopTrial(){
+  const nums = [2,3,4,5,6,7,8,9];
+  let big, small;
+  do { big = pick(nums); small = pick(nums); } while(big <= small || Math.abs(big-small) < 2);
+  const bigDisplay = Math.random() > .5;
+  const stimA = bigDisplay
+    ? `<span style="font-size:3.5rem;font-weight:700;color:var(--white)">${big}</span>`
+    : `<span style="font-size:1.4rem;font-weight:700;color:var(--white)">${big}</span>`;
+  const stimB = bigDisplay
+    ? `<span style="font-size:1.4rem;font-weight:700;color:var(--white)">${small}</span>`
+    : `<span style="font-size:3.5rem;font-weight:700;color:var(--white)">${small}</span>`;
+  const correctOpt = bigDisplay ? 'A' : 'B';
+  return {
+    type:'numerical-stroop',
+    typeLabelEn:'Numerical Stroop',
+    typeLabelHy:'Թվային Ստրուպ',
+    questionEn:'Which number is NUMERICALLY larger? (ignore the font size)',
+    questionHy:'Որ թիվն է ՄԵԾ արժեքով: (անտեսիր տառատեսակի չափը)',
+    stimulus:`<div class="num-stroop">${stimA}<span style="color:var(--white-dim);font-size:1.2rem">vs</span>${stimB}</div>`,
+    optA: String(big), optB: String(small),
+    correctOpt,
+    ev: 120,
+  };
+}
+
+function makeNumberWordTrial(){
+  const words = ['ONE','TWO','THREE','FOUR'];
+  const wordsHy = ['ՄԵԿ','ԵՐԿՈՒ','ԵՐԵՔ','ՉՈՐՍ'];
+  const vals = [1,2,3,4];
+  const w = Math.floor(Math.random()*4);
+  const n = Math.floor(Math.random()*4);
+  const wordEn = words[w]; const wordHy = wordsHy[w];
+  const num = vals[n];
+  const correct = 1;
+  return {
+    type:'number-word',
+    typeLabelEn:'Number–Word Conflict',
+    typeLabelHy:'Թիվ–Բառ Հակամարտություն',
+    questionEn:'How many ITEMS appear on the left side of "or"?',
+    questionHy:'Քանի ՏARR կա "or"-ի ձախ կողմում:',
+    stimulus:`<div class="crt-text" style="text-align:center;font-size:1.4rem"><strong>${lang==='hy'?wordHy:wordEn}</strong> &nbsp;or&nbsp; <strong>${num}</strong></div>`,
+    optA:'1', optB:'2',
+    correctOpt:'A',
+    ev:120,
+  };
+}
+
+function makeFlankerTrial(){
+  const dirs = ['left','right'];
+  const center = pick(dirs);
+  const flanker = pick(dirs);
+  const congruent = center === flanker;
+  const arr = d => d==='left' ? '←' : '→';
+  const row = `${arr(flanker)}${arr(flanker)}<span style="color:var(--gold)">${arr(center)}</span>${arr(flanker)}${arr(flanker)}`;
+  const optA = t('Left ←','Ձախ ←');
+  const optB = t('Right →','Աջ →');
+  const correctOpt = center === 'left' ? 'A' : 'B';
+  return {
+    type:'flanker',
+    typeLabelEn:'Flanker Task',
+    typeLabelHy:'Ֆլանկերային Առաջադրանք',
+    questionEn:'Which direction does the CENTER arrow (gold) point?',
+    questionHy:'Ո՞ր ուղղությամբ է ուղղված ԿԵՆՏՐՈՆԱԿԱՆ սլաքը (ոսկեգույն):',
+    stimulus:`<div class="flanker-display">${row}</div>`,
+    optA, optB,
+    correctOpt,
+    ev:120,
+    congruent,
+  };
+}
+
+function makeCRTTrial(){
+  const crtQs = [
+    {
+      enQ:'A bat and a ball together cost 110 points. The bat costs 100 more than the ball. How many points does the ball cost?',
+      hyQ:'Բատ և գնդակ միասին արժե 110 միավոր: Բատն արժե 100-ով ավելի, քան գնդակը: Քանի՞ միավոր արժե գնդակը:',
+      optAen:'10', optBen:'5',
+      optAhy:'10', optBhy:'5',
+      correct:'B', trap:'A'
+    },
+    {
+      enQ:'If 5 machines take 5 minutes to make 5 widgets, how long does 1 machine take to make 1 widget?',
+      hyQ:'Եթե 5 մեքենա 5 րոպեում պատրաստում է 5 կտոր, ապա 1 մեքենան 1 կտոր պատրաստելու համար քանի՞ րոպե կպահանջվի:',
+      optAen:'1 minute', optBen:'5 minutes',
+      optAhy:'1 րոպե', optBhy:'5 րոպե',
+      correct:'B', trap:'A'
+    },
+    {
+      enQ:'In a lake, a patch of lily pads doubles in size every day. It takes 48 days to cover the whole lake. How long to cover half the lake?',
+      hyQ:'Լճում ջրաշուշան ծածկոցը ամեն օր կրկնապատկվում է: Ամբողջ լիճը ծածկելը 48 օր է պահանջում: Կեսը ծածկելու համար:',
+      optAen:'24 days', optBen:'47 days',
+      optAhy:'24 օր', optBhy:'47 օր',
+      correct:'B', trap:'A'
+    }
+  ];
+  const q = pick(crtQs);
+  return {
+    type:'crt',
+    typeLabelEn:'Reflection Test',
+    typeLabelHy:'Արտացոլման Թեստ',
+    questionEn:q.enQ,
+    questionHy:q.hyQ,
+    stimulus:'',
+    optA: lang==='hy' ? q.optAhy : q.optAen,
+    optB: lang==='hy' ? q.optBhy : q.optBen,
+    correctOpt: q.correct,
+    ev:140,
+    isCRT:true,
+  };
+}
+
+function makeGambleTrial(){
+  const scenarios = [
+    {qEn:'Two sealed envelopes are in front of you.',qHy:'Ձեր առջև երկու կնքված ծրար կա:',aEn:'Open the safe one — +{c}pts guaranteed',aHy:'Բաց ապահովը — +{c}pts երաշխ.',bEn:'Open the mystery one — {p} chance of +{w}pts',bHy:'Բաց առեղծ.— {p} հնարավ. +{w}pts',certain:100,bProb:'70%',bWin:200,ev:140},
+    {qEn:'Your friend makes you a bet.',qHy:'Ձեր ընկերը խաղ է առաջ.',aEn:'Take the sure money — +{c}pts',aHy:'Վերցրու ապահովը — +{c}pts',bEn:'Take the bet — {p} chance of +{w}pts',bHy:'Ընդ. խաղը — {p} հնար. +{w}pts',certain:110,bProb:'50%',bWin:300,ev:150},
+    {qEn:'Two job offers land on your desk.',qHy:'Աշխ. երկու առաջ. կա:',aEn:'Stable company — +{c}pts fixed',aHy:'Կայուն ընկ. — +{c}pts',bEn:'Risky startup — {p} chance of +{w}pts',bHy:'Ռիսկ. ստարտ. — {p} +{w}pts',certain:90,bProb:'80%',bWin:150,ev:120},
+    {qEn:'The game show host stops you on stage.',qHy:'Հաղ. կանգ. ձեզ բեմ.',aEn:'Take the cash — +{c}pts now',aHy:'Վերցրու — +{c}pts հիմա',bEn:'Open the mystery box — {p} chance of +{w}pts',bHy:'Բաց տուփը — {p} +{w}pts',certain:105,bProb:'60%',bWin:250,ev:150},
+    {qEn:'You have one round to invest your points.',qHy:'Մեկ փ. ներդ. հնարավ.',aEn:'Safe bond — +{c}pts guaranteed',aHy:'Ապահ. — +{c}pts երաշխ.',bEn:'Stock market — {p} chance of +{w}pts',bHy:'Շուկա — {p} +{w}pts',certain:100,bProb:'40%',bWin:350,ev:140},
+    {qEn:'A stranger offers you a coin flip.',qHy:'Անծ. դրամ. առաջ.',aEn:'Decline — keep +{c}pts',aHy:'Հրաժ. — պահ. +{c}pts',bEn:'Flip the coin — {p} chance of +{w}pts',bHy:'Դրամ — {p} +{w}pts',certain:80,bProb:'90%',bWin:100,ev:90},
+    {qEn:'Two doors stand before you.',qHy:'Երկու դուռ կա:',aEn:'Door A — safe +{c}pts inside',aHy:'Դուռ Ա — ապ. +{c}pts',bEn:'Door B — {p} chance of +{w}pts',bHy:'Դուռ Բ — {p} +{w}pts',certain:90,bProb:'30%',bWin:400,ev:120},
+    {qEn:'Final round of the tournament.',qHy:'Մրց. վ. փուլ.',aEn:'Accept the draw — +{c}pts each',aHy:'Ոչ-ոքի — +{c}pts',bEn:'Play on — {p} chance of +{w}pts',bHy:'Շ.— {p} +{w}pts',certain:110,bProb:'55%',bWin:280,ev:154},
+  ];
+  const g = pick(scenarios);
+  const fill = (s) => s.replace('{c}',g.certain).replace('{p}',g.bProb).replace('{w}',g.bWin);
+  return {
+    type:'gamble',
+    typeLabelEn:'Risk Decision',
+    typeLabelHy:'Ռիսկային Որոշում',
+    questionEn: g.qEn,
+    questionHy: g.qHy,
+    stimulus:'',
+    optA: fill(lang==='hy' ? g.aHy : g.aEn),
+    optB: fill(lang==='hy' ? g.bHy : g.bEn),
+    correctOpt:null,
+    ev:g.ev,
+    certainEv:g.certain,
+    _g:g,
+  };
+}
+
+// ══════════════════════════════════════════════════════════════════
+// TRIAL SEQUENCE BUILDER
+// ══════════════════════════════════════════════════════════════════
+const BLOCKS = [
+  {block:1, timePressure:'low',  complexity:'low',  timeLimit:12, count:10},
+  {block:2, timePressure:'low',  complexity:'high', timeLimit:12, count:10},
+  {block:3, timePressure:'high', complexity:'low',  timeLimit:7,  count:10},
+  {block:4, timePressure:'high', complexity:'high', timeLimit:7,  count:10},
+];
+
+function buildTrialSequence(){
+  const allTrials = [];
+  BLOCKS.forEach(b => {
+    const blockTrials = [];
+    for(let i=0; i<b.count; i++){
+      const r = Math.random();
+      let trial;
+      if(r < .20)      trial = makeStroopTrial(false);
+      else if(r < .35) trial = makeStroopTrial(true);
+      else if(r < .50) trial = makeNumericalStroopTrial();
+      else if(r < .62) trial = makeNumberWordTrial();
+      else if(r < .74) trial = makeFlankerTrial();
+      else if(r < .84) trial = makeCRTTrial();
+      else             trial = makeGambleTrial();
+
+      trial.block        = b.block;
+      trial.timePressure = b.timePressure;
+      trial.complexity   = b.complexity;
+      trial.timeLimit    = b.timeLimit;
+      blockTrials.push(trial);
+    }
+    shuffle(blockTrials).forEach(t => allTrials.push(t));
+  });
+  return allTrials;
+}
+
+function buildPracticeTrials(){
+  return [
+    {...makeGambleTrial(),         block:0, timePressure:'low',  timeLimit:12},
+    {...makeStroopTrial(false),    block:0, timePressure:'low',  timeLimit:12},
+    {...makeFlankerTrial(),        block:0, timePressure:'low',  timeLimit:12},
+    {...makeNumericalStroopTrial(),block:0, timePressure:'low',  timeLimit:12},
+    {...makeStroopTrial(true),     block:0, timePressure:'low',  timeLimit:12},
+    {...makeCRTTrial(),            block:0, timePressure:'high', timeLimit:7},
+    {...makeGambleTrial(),         block:0, timePressure:'high', timeLimit:7},
+    {...makeStroopTrial(false),    block:0, timePressure:'high', timeLimit:7},
+    {...makeNumberWordTrial(),     block:0, timePressure:'high', timeLimit:7},
+    {...makeFlankerTrial(),        block:0, timePressure:'high', timeLimit:7},
+  ];
+}
+
+// ══════════════════════════════════════════════════════════════════
+// EXPERIMENT STATE
+// ══════════════════════════════════════════════════════════════════
+let practiceTrials = [];
+let mainTrials     = [];
+let allTrials      = [];
+let globalTrialIdx = 0;
+let currentBlock   = 1;
+let breakTimer     = null;
+
+function startPractice(){
+  practiceTrials = buildPracticeTrials();
+  mainTrials     = buildTrialSequence();
+  allTrials      = [...practiceTrials, ...mainTrials];
+  totalScore     = 0;
+  trialLog       = [];
+  globalTrialIdx = 0;
+  isPractice     = true;
+  currentBlock   = 1;
+
+  renderBoard('board-list');
+  showScreen('experiment');
+  document.getElementById('practice-label').style.display = 'block';
+  loadTrial(allTrials[0]);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// TRIAL RENDERING
+// ══════════════════════════════════════════════════════════════════
+function loadTrial(trial){
+  currentTrial = trial;
+  awaitingNext = false;
+
+  const totalCount = allTrials.length;
+  const displayIdx = globalTrialIdx + 1;
+
+  isPractice = trial.block === 0;
+  document.getElementById('practice-label').style.display = isPractice ? 'block' : 'none';
+
+  document.getElementById('score-display').innerHTML =
+    `${totalScore} <span style="font-family:var(--font-body);font-size:.9rem;color:var(--white-dim)">${t('pts','մt')}</span>`;
+  document.getElementById('progress-display').textContent =
+    `${displayIdx} / ${totalCount}`;
+
+  // Rich progress indicator
+  const remaining = totalCount - displayIdx;
+  const pct = Math.round((displayIdx / totalCount) * 100);
+  const questionWord = t('Question','Հ/հ');
+  const remainingWord = t('remaining','մնում է');
+  document.getElementById('progress-current').textContent =
+    `${questionWord} ${displayIdx}`;
+  document.getElementById('progress-remaining').textContent =
+    remaining > 0 ? `${remaining} ${remainingWord}` : t('Last one!','Վերջինը:');
+  document.getElementById('progress-fill').style.width = Math.max(2, pct) + '%';
+
+  const typeLabel = lang === 'hy' ? (trial.typeLabelHy || trial.typeLabelEn) : trial.typeLabelEn;
+  document.getElementById('trial-type-badge').textContent = typeLabel;
+
+  const isHigh = trial.timePressure === 'high';
+  const tag = document.getElementById('condition-tag');
+  tag.className = 'condition-tag ' + (isHigh ? 'high' : 'low');
+  tag.textContent = isHigh
+    ? t('⚡ High pressure — 7s','⚡ Բարձր ճնշում — 7վ')
+    : t('Low pressure — 12s','Ցածր ճնշում — 12վ');
+
+  document.getElementById('trial-question').textContent =
+    lang === 'hy' ? (trial.questionHy || trial.questionEn) : trial.questionEn;
+
+  document.getElementById('trial-stimulus').innerHTML = trial.stimulus || '';
+
+  document.getElementById('opt-a-text').textContent = trial.optA;
+  document.getElementById('opt-b-text').textContent = trial.optB;
+
+  document.getElementById('opt-a').className = 'option-btn';
+  document.getElementById('opt-b').className = 'option-btn';
+  document.getElementById('opt-a').disabled = false;
+  document.getElementById('opt-b').disabled = false;
+
+  document.getElementById('feedback-flash').className = 'feedback-flash';
+  document.getElementById('feedback-flash').textContent = '';
+
+  startTimer(trial.timeLimit);
+  trialStartTime = Date.now();
+}
+
+function renderTrial(trial){ if(trial) loadTrial(trial); }
+
+// ══════════════════════════════════════════════════════════════════
+// TIMER
+// ══════════════════════════════════════════════════════════════════
+function startTimer(seconds){
+  clearInterval(timerInterval);
+  let remaining = seconds;
+  updateTimerUI(remaining, seconds);
+  timerInterval = setInterval(() => {
+    remaining -= .1;
+    if(remaining <= 0){
+      clearInterval(timerInterval);
+      handleTimeout();
+    } else {
+      updateTimerUI(remaining, seconds);
+    }
+  }, 100);
+}
+
+function updateTimerUI(remaining, total){
+  const frac = Math.max(0, remaining / total);
+  const bar = document.getElementById('timer-bar');
+  bar.style.width = (frac * 100) + '%';
+  bar.style.background = frac > .5 ? 'var(--teal)' : frac > .25 ? 'var(--gold)' : 'var(--red)';
+  document.getElementById('timer-label').textContent = remaining.toFixed(1) + 's';
+}
+
+// ══════════════════════════════════════════════════════════════════
+// CHOICE HANDLING
+// ══════════════════════════════════════════════════════════════════
+function handleChoice(choice){
+  if(awaitingNext) return;
+  clearInterval(timerInterval);
+  awaitingNext = true;
+
+  const rt = Date.now() - trialStartTime;
+  const trial = currentTrial;
+  let points = 0;
+  let correct = null;
+
+  if(trial.type === 'gamble'){
+    const ev = choice === 'A' ? (trial.certainEv || trial.ev) : trial.ev;
+    points = 5 + ev;
+    correct = null;
+  } else {
+    const correctOpt = trial.correctOpt;
+    if(correctOpt){
+      correct = choice === correctOpt;
+      points = correct ? (5 + trial.ev) : 5;
+    } else {
+      points = 5 + trial.ev;
+    }
+  }
+
+  points = Math.round(points);
+
+  const btnA = document.getElementById('opt-a');
+  const btnB = document.getElementById('opt-b');
+  btnA.disabled = true;
+  btnB.disabled = true;
+
+  if(correct === true){
+    (choice === 'A' ? btnA : btnB).classList.add('chosen-correct');
+  } else if(correct === false){
+    (choice === 'A' ? btnA : btnB).classList.add('chosen-wrong');
+    if(trial.correctOpt === 'A') btnA.classList.add('chosen-correct');
+    else btnB.classList.add('chosen-correct');
+  } else {
+    (choice === 'A' ? btnA : btnB).classList.add('chosen-correct');
+  }
+
+  if(!isPractice) totalScore += points;
+
+  showFeedback('+' + points + ' pts', 'pos');
+  logTrial(trial, choice, rt, false, points);
+  setTimeout(() => nextTrial(), 700);
+}
+
+function handleTimeout(){
+  if(awaitingNext) return;
+  awaitingNext = true;
+  const rt = currentTrial.timeLimit * 1000;
+  if(!isPractice) totalScore -= 10;
+  showFeedback('-10 pts', 'neg');
+  logTrial(currentTrial, null, rt, true, -10);
+  setTimeout(() => nextTrial(), 700);
+}
+
+function showFeedback(text, cls){
+  const el = document.getElementById('feedback-flash');
+  el.textContent = text;
+  el.className = 'feedback-flash ' + cls + ' show';
+  setTimeout(() => el.className = 'feedback-flash', 600);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// TRIAL LOGGING
+// ══════════════════════════════════════════════════════════════════
+function logTrial(trial, choice, rt, timedOut, pts){
+  trialLog.push({
+    participantId, nickname, age, gender,
+    trialNumber:  globalTrialIdx + 1,
+    block:        trial.block,
+    timePressure: trial.timePressure || '',
+    complexity:   trial.complexity || '',
+    timeLimit:    trial.timeLimit,
+    trialType:    trial.type,
+    choice:       choice,
+    responseTimeMs: Math.round(rt),
+    timedOut:     timedOut,
+    pointsEarned: pts,
+    totalScoreAfter: totalScore,
+    timestamp:    new Date().toISOString(),
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════
+// NEXT TRIAL / BLOCK TRANSITIONS
+// ══════════════════════════════════════════════════════════════════
+function nextTrial(){
+  globalTrialIdx++;
+  if(globalTrialIdx >= allTrials.length){
+    endExperiment(); return;
+  }
+  const next = allTrials[globalTrialIdx];
+
+  if(!isPractice && next.block !== currentBlock && next.block > 0){
+    currentBlock = next.block;
+    showBreakScreen(next.block - 1);
+    return;
+  }
+
+  if(isPractice && next.block > 0){
+    isPractice = false;
+    document.getElementById('practice-label').style.display = 'none';
+    showPracticeComplete(); return;
+  }
+
+  loadTrial(next);
+}
+
+function showPracticeComplete(){
+  clearInterval(timerInterval);
+  // Show a clean interstitial screen instead of a fixed overlay (fixes dark screen bug)
+  const expScreen = document.getElementById('screen-experiment');
+  const interstitial = document.createElement('div');
+  interstitial.id = 'practice-interstitial';
+  interstitial.style.cssText = 'position:absolute;inset:0;background:var(--navy);display:flex;align-items:center;justify-content:center;z-index:500;border-radius:0;';
+  interstitial.innerHTML = `<div style="max-width:480px;text-align:center;padding:40px;">
+    <div style="font-size:2.8rem;margin-bottom:16px;">✓</div>
+    <h2 style="font-family:var(--font-display);color:var(--white);margin-bottom:16px">${t('Practice complete!','Պրակտիկան ավարտված է:')}</h2>
+    <p style="color:var(--white-dim);margin-bottom:12px;font-size:1rem">${t('The real experiment begins now.','Իրական փորձը սկսվում է հիմա:')}</p>
+    <p style="color:var(--white-dim);margin-bottom:28px;font-size:1rem">${t('Your score resets to 0. Answer before the clock runs out — timing out costs you 10 pts!','Ձեր հաշիվը 0 է: Ժամաչափից առաջ պատ. — ժամ. սպ. −10 pts:')}</p>
+    <button class="btn btn-primary" onclick="document.getElementById('practice-interstitial').remove();isPractice=false;document.getElementById('practice-label').style.display='none';loadTrial(allTrials[globalTrialIdx]);">${t('Start the real experiment →','Սկսել փորձը →')}</button>
+  </div>`;
+  expScreen.style.position = 'relative';
+  expScreen.appendChild(interstitial);
+}
+
+function showBreakScreen(completedBlock){
+  clearInterval(timerInterval);
+  renderBoard('break-board-list');
+  document.getElementById('break-block-label').textContent =
+    t(`Block ${completedBlock} complete`, `${completedBlock}- րդ բլոկն ավարտված է`);
+  document.getElementById('break-score').textContent =
+    `${t('Score so far:','Հաշիվ հիմա:')} ${totalScore} ${t('pts','մt')}`;
+  showScreen('break');
+
+  let secs = 60;
+  document.getElementById('break-countdown').textContent = secs;
+  breakTimer = setInterval(() => {
+    secs--;
+    document.getElementById('break-countdown').textContent = secs;
+    if(secs <= 0){ clearInterval(breakTimer); resumeExperiment(); }
+  }, 1000);
+}
+
+function resumeExperiment(){
+  clearInterval(breakTimer);
+  renderBoard('board-list');
+  showScreen('experiment');
+  loadTrial(allTrials[globalTrialIdx]);
+}
+
+// Space to skip break
+document.addEventListener('keydown', e => {
+  if(e.code === 'Space' && document.getElementById('screen-break').classList.contains('active')){
+    e.preventDefault();
+    resumeExperiment();
+  }
+  if(e.code === 'KeyF' && document.getElementById('screen-experiment').classList.contains('active') && !awaitingNext){
+    handleChoice('A');
+  }
+  if(e.code === 'KeyJ' && document.getElementById('screen-experiment').classList.contains('active') && !awaitingNext){
+    handleChoice('B');
+  }
+});
+
+// ══════════════════════════════════════════════════════════════════
+// END OF EXPERIMENT
+// ══════════════════════════════════════════════════════════════════
+function endExperiment(){
+  clearInterval(timerInterval);
+  const finalRank = addRealScore(nickname, totalScore);
+
+  document.getElementById('final-rank-display').textContent = '#' + finalRank;
+  document.getElementById('final-score-display').textContent = totalScore + ' ' + t('pts','մt');
+
+  const msg = document.getElementById('result-message');
+  if(finalRank === 1){
+    msg.textContent = t('You are #1! Outstanding performance — the researcher will contact you about your prize.','Դուք #1 եք: Հիանալի արդյունք — հետազոտողը կապ կհաստատի մրցանակի վերաբերյալ:');
+    msg.style.color = 'var(--gold)';
+  } else if(finalRank <= 3){
+    msg.textContent = t('Top 3! Incredible result. Keep an eye out for the prize announcement.','Թոփ 3: Անհավատալի արդյունք: Հետևեք մրցանակի հայտարարությանը:');
+    msg.style.color = 'var(--gold)';
+  } else {
+    msg.textContent = t('Great effort! The competition is still running — other participants are yet to complete the study.','Հիանալի ջանք: Մրցույթը դեռ ընթանում է — այլ մասնակիցներ դեռ պետք է ավարտեն ուսումնասիրությունը:');
+    msg.style.color = 'var(--white-dim)';
+  }
+
+  renderBoard('results-board-list', nickname);
+  showScreen('results');
+  saveToSheets();
+}
+
+// ══════════════════════════════════════════════════════════════════
+// GOOGLE SHEETS SUBMISSION
+// ══════════════════════════════════════════════════════════════════
+function saveToSheets(){
+  if(!SHEETS_ENDPOINT || SHEETS_ENDPOINT === 'YOUR_APPS_SCRIPT_ENDPOINT_HERE') return;
+  const payload = {
+    participantId, nickname, age, gender,
+    totalScore,
+    completedAt: new Date().toISOString(),
+    trials: trialLog,
+  };
+  fetch(SHEETS_ENDPOINT, {
+    method:'POST',
+    mode:'no-cors',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(payload),
+  }).catch(err => console.warn('Sheets save failed:', err));
+}
+</script>
+</body>
+</html>
